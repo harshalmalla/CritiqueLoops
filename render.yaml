@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: critiqueloop-api
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: CORS_ORIGIN
+        value: https://harshalmalla.github.io
+      - key: NODE_VERSION
+        value: 20.11.0

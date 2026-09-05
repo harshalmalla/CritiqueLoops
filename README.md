@@ -12,38 +12,44 @@ A minimal and anonymous peer feedback platform for developers and designers to e
 ## 🎯 Features
 
 - 📤 Submit your portfolio anonymously
-- 🔁 Simulated matching system (random portfolio exchange)
-- 🧾 Leave feedback without login
-- 💻 Fully frontend-built using HTML, CSS, and JS
+- 🔁 Real matching system — you're automatically paired with the next person who submits
+- 🧾 Leave and receive feedback without login (identity is a one-time opaque token, never shown to anyone)
+- 💻 Frontend built with HTML, CSS, and JS
+- 🗄️ Backend API on Node/Express + MongoDB, deployed on Render
 - 📱 Mobile-responsive design
 
 ## 🛠 Tech Stack
 
-- HTML: Structure of the app
-- CSS: Styling and layout
-- JavaScript: Logic and interactivity
-- Built visually using [v0.dev](https://v0.dev)
-- Hosted on GitHub Pages
+- **Frontend:** HTML, CSS, JavaScript — built visually using [v0.dev](https://v0.dev), hosted on GitHub Pages
+- **Backend:** Node.js + Express + MongoDB (Mongoose), hosted on [Render](https://render.com) — see [server/README.md](server/README.md) for setup and deploy steps
+- **Database:** MongoDB Atlas (free tier)
 
 ## 📁 Folder Structure
-CritiqueLoops/ ├── index.html ├── styles.css ├── script.js
+```
+CritiqueLoops/
+├── index.html
+├── styles.css
+├── script.js
+├── render.yaml        # Render deploy blueprint
+└── server/            # Express + MongoDB API (see server/README.md)
+```
 
 ## 🚀 How to Use
 
-1. Open the live site or run `index.html` locally
-2. Enter your portfolio link
-3. Submit and see it exchanged (simulated for Round 1)
-4. Anonymous UI with simple review flow
+1. Open the live site (or run `index.html` locally)
+2. Enter your portfolio link and submit
+3. You're queued and automatically matched with the next submitter — the page updates itself, no reload needed
+4. Review their portfolio and leave feedback; see feedback others left for you on the same page
+5. Anonymous throughout — no login, no personal data stored beyond the URL, email/message you submit
 
 ## 🔒 Ethics & Simplicity
 
-- No login or data stored
-- Anonymous and fast
-- Focused on UX for Round 1 demo
+- No login. Anonymity is enforced by a one-time, unguessable token — not by trusting the client
+- No portfolio or feedback data is shared with anyone outside your match
+- Focused on UX for Round 1 demo, but the matching and feedback loop is real, not simulated
 
 ## 🧩 Future Enhancements
 
-- Real matching logic with database
 - Review reputation system
 - Sentiment-based feedback scoring
 - Login and personalized dashboard

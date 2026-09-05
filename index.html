@@ -137,8 +137,43 @@
             <div class="error-message" id="url-error"></div>
           </div>
           <button type="submit" class="btn btn-primary btn-submit">Submit for Review</button>
-          <div class="success-message" id="portfolio-success">Your portfolio has been submitted! You'll receive feedback soon.</div>
+          <div class="success-message" id="portfolio-success">Your portfolio has been submitted! You'll be matched with another creator below — this can take a moment if the server was asleep.</div>
         </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Match / Review Section -->
+  <section id="match" class="match section" style="display: none;">
+    <div class="container">
+      <h2 class="section-title">Your Match</h2>
+      <div class="form-container">
+        <div class="match-card" id="match-waiting">
+          <p>You're in the queue. As soon as another creator submits a portfolio, you'll be matched here and asked to leave feedback.</p>
+        </div>
+
+        <div class="match-card" id="match-ready" style="display: none;">
+          <p>You've been matched! Take a look and leave honest, constructive feedback:</p>
+          <p class="match-url"><a id="match-url" href="#" target="_blank" rel="noopener noreferrer"></a></p>
+          <form id="review-form" class="form">
+            <div class="form-group">
+              <label for="review-feedback">Your Feedback</label>
+              <textarea id="review-feedback" name="review-feedback" placeholder="What's working well? What would you improve?" required></textarea>
+              <div class="error-message" id="review-error"></div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-submit">Send Feedback</button>
+            <div class="success-message" id="review-success">Feedback sent! Thank you for helping a fellow creator.</div>
+          </form>
+        </div>
+
+        <div class="match-card" id="match-done" style="display: none;">
+          <p>You've submitted your feedback for this match. Thanks for helping a fellow creator!</p>
+        </div>
+
+        <div id="feedback-received-wrapper" style="display: none;">
+          <h3>Feedback You've Received</h3>
+          <ul id="feedback-received-list" class="feedback-list"></ul>
+        </div>
       </div>
     </div>
   </section>
@@ -181,6 +216,12 @@
     </div>
   </footer>
 
+  <script>
+    // Base URL of the CritiqueLoop API (see server/README.md).
+    // Point this at your deployed Render service, e.g.:
+    // window.CRITIQUELOOP_API_BASE_URL = "https://critiqueloop-api.onrender.com/api";
+    window.CRITIQUELOOP_API_BASE_URL = "http://localhost:4000/api"
+  </script>
   <script src="script.js"></script>
 </body>
 </html>

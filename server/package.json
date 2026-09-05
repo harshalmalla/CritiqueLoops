@@ -1,0 +1,21 @@
+{
+  "name": "critiqueloop-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend API for CritiqueLoop: portfolio submission, anonymous matching, and feedback exchange.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.4.1",
+    "mongoose": "^8.9.2"
+  }
+}

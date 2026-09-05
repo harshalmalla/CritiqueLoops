@@ -1,3 +1,6 @@
+const API_BASE_URL = window.CRITIQUELOOP_API_BASE_URL || "http://localhost:4000/api"
+const STORAGE_KEY = "critiqueloop_submission"
+
 document.addEventListener("DOMContentLoaded", () => {
   // Set current year in footer
   const currentYearEl = document.getElementById("current-year")
@@ -27,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const urlError = document.getElementById("url-error")
   const portfolioSuccess = document.getElementById("portfolio-success")
 
-  portfolioForm.addEventListener("submit", (e) => {
+  portfolioForm.addEventListener("submit", async (e) => {
     e.preventDefault()
 
     // Reset messages
@@ -43,26 +46,30 @@ document.addEventListener("DOMContentLoaded", () => {
       return
     }
 
-    // Simulate form submission
     const submitBtn = portfolioForm.querySelector(".btn-submit")
     submitBtn.textContent = "Submitting..."
     submitBtn.disabled = true
 
-    setTimeout(() => {
-      // Show success message
+    try {
+      const data = await apiRequest("/submissions", {
+        method: "POST",
+        body: { portfolioUrl },
+      })
+
+      saveSubmission({ submissionId: data.submissionId, token: data.token })
       portfolioSuccess.style.display = "block"
+      portfolioForm.reset()
+
+      showMatchSection()
+      await refreshMatchStatus()
+      startPolling()
+    } catch (err) {
+      urlError.textContent = err.message || "Something went wrong. Please try again."
+      urlError.style.display = "block"
+    } finally {
       submitBtn.textContent = "Submit for Review"
       submitBtn.disabled = false
-
-      // Reset form after 3 seconds
-      setTimeout(() => {
-        portfolioForm.reset()
-        portfolioSuccess.style.display = "none"
-      }, 3000)
-
-      // Simulate getting a random portfolio to review
-      simulateReviewAssignment()
-    }, 1500)
+    }
   })
 
   // Contact form submission
@@ -73,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const messageError = document.getElementById("message-error")
   const contactSuccess = document.getElementById("contact-success")
 
-  contactForm.addEventListener("submit", (e) => {
+  contactForm.addEventListener("submit", async (e) => {
     e.preventDefault()
 
     // Reset messages
@@ -97,24 +104,76 @@ document.addEventListener("DOMContentLoaded", () => {
       return
     }
 
-    // Simulate form submission
     const submitBtn = contactForm.querySelector(".btn-submit")
     submitBtn.textContent = "Sending..."
     submitBtn.disabled = true
 
-    setTimeout(() => {
-      // Show success message
+    try {
+      await apiRequest("/contact", { method: "POST", body: { email, message } })
       contactSuccess.style.display = "block"
+      contactForm.reset()
+    } catch (err) {
+      messageError.textContent = err.message || "Something went wrong. Please try again."
+      messageError.style.display = "block"
+    } finally {
       submitBtn.textContent = "Send Message"
       submitBtn.disabled = false
-
-      // Reset form after 3 seconds
-      setTimeout(() => {
-        contactForm.reset()
-        contactSuccess.style.display = "none"
-      }, 3000)
-    }, 1500)
+    }
   })
+
+  // Review form submission (feedback for the matched portfolio)
+  const reviewForm = document.getElementById("review-form")
+  const reviewFeedbackInput = document.getElementById("review-feedback")
+  const reviewError = document.getElementById("review-error")
+  const reviewSuccess = document.getElementById("review-success")
+
+  reviewForm.addEventListener("submit", async (e) => {
+    e.preventDefault()
+    reviewError.style.display = "none"
+    reviewSuccess.style.display = "none"
+
+    const feedback = reviewFeedbackInput.value.trim()
+    if (feedback.length < 20) {
+      reviewError.textContent = "Feedback must be at least 20 characters"
+      reviewError.style.display = "block"
+      return
+    }
+
+    const submission = getSavedSubmission()
+    if (!submission) {
+      reviewError.textContent = "We couldn't find your submission. Try submitting your portfolio again."
+      reviewError.style.display = "block"
+      return
+    }
+
+    const submitBtn = reviewForm.querySelector(".btn-submit")
+    submitBtn.textContent = "Sending..."
+    submitBtn.disabled = true
+
+    try {
+      await apiRequest(`/submissions/${submission.submissionId}/review`, {
+        method: "POST",
+        body: { feedback },
+        token: submission.token,
+      })
+      reviewSuccess.style.display = "block"
+      reviewForm.reset()
+      await refreshMatchStatus()
+    } catch (err) {
+      reviewError.textContent = err.message || "Something went wrong. Please try again."
+      reviewError.style.display = "block"
+    } finally {
+      submitBtn.textContent = "Send Feedback"
+      submitBtn.disabled = false
+    }
+  })
+
+  // Restore an in-progress submission across page reloads
+  if (getSavedSubmission()) {
+    showMatchSection()
+    refreshMatchStatus()
+    startPolling()
+  }
 
   // Add fade-in animation to sections
   const sections = document.querySelectorAll(".section")
@@ -138,7 +197,8 @@ document.addEventListener("DOMContentLoaded", () => {
     observer.observe(section)
   })
 
-  // Helper functions
+  // ---- Helper functions ----
+
   function isValidUrl(url) {
     try {
       const parsed = new URL(url)
@@ -153,15 +213,127 @@ document.addEventListener("DOMContentLoaded", () => {
     return emailRegex.test(email)
   }
 
-  // Simulate review assignment (for future implementation)
-  function simulateReviewAssignment() {
-    // This function would be expanded in the future to handle the actual review matching
-    console.log("Portfolio submitted. Review assignment would happen here in the future implementation.")
+  async function apiRequest(path, { method = "GET", body, token } = {}) {
+    const headers = { "Content-Type": "application/json" }
+    if (token) headers["x-submission-token"] = token
 
-    // Example of what might happen in the future:
-    // 1. Send portfolio to backend
-    // 2. Get a random portfolio to review
-    // 3. Show the user the portfolio they need to review
-    // 4. Collect their feedback
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+    })
+
+    let data = null
+    try {
+      data = await response.json()
+    } catch (e) {
+      // No JSON body (e.g. a 204, or the server errored before responding).
+    }
+
+    if (!response.ok) {
+      const error = new Error((data && data.error) || `Request failed (${response.status})`)
+      error.status = response.status
+      throw error
+    }
+
+    return data
+  }
+
+  function saveSubmission({ submissionId, token }) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ submissionId, token }))
+  }
+
+  function getSavedSubmission() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY)
+      return raw ? JSON.parse(raw) : null
+    } catch (e) {
+      return null
+    }
+  }
+
+  function clearSavedSubmission() {
+    localStorage.removeItem(STORAGE_KEY)
+  }
+
+  function showMatchSection() {
+    const matchSection = document.getElementById("match")
+    if (matchSection) matchSection.style.display = "block"
+  }
+
+  let pollTimer = null
+
+  function startPolling() {
+    if (pollTimer) return
+    pollTimer = setInterval(refreshMatchStatus, 6000)
+  }
+
+  function stopPolling() {
+    if (pollTimer) {
+      clearInterval(pollTimer)
+      pollTimer = null
+    }
+  }
+
+  async function refreshMatchStatus() {
+    const submission = getSavedSubmission()
+    if (!submission) return
+
+    const waitingCard = document.getElementById("match-waiting")
+    const readyCard = document.getElementById("match-ready")
+    const doneCard = document.getElementById("match-done")
+    const matchUrlEl = document.getElementById("match-url")
+    const feedbackWrapper = document.getElementById("feedback-received-wrapper")
+    const feedbackList = document.getElementById("feedback-received-list")
+
+    try {
+      const data = await apiRequest(`/submissions/${submission.submissionId}`, {
+        token: submission.token,
+      })
+
+      if (data.status === "matched" && data.hasSubmittedReview) {
+        waitingCard.style.display = "none"
+        readyCard.style.display = "none"
+        doneCard.style.display = "block"
+        stopPolling()
+      } else if (data.status === "matched") {
+        waitingCard.style.display = "none"
+        readyCard.style.display = "block"
+        doneCard.style.display = "none"
+        if (matchUrlEl && data.matchedPortfolioUrl) {
+          matchUrlEl.href = data.matchedPortfolioUrl
+          matchUrlEl.textContent = data.matchedPortfolioUrl
+        }
+        stopPolling()
+      } else {
+        waitingCard.style.display = "block"
+        readyCard.style.display = "none"
+        doneCard.style.display = "none"
+      }
+
+      if (feedbackWrapper && feedbackList) {
+        if (data.feedbackReceived && data.feedbackReceived.length > 0) {
+          feedbackWrapper.style.display = "block"
+          feedbackList.innerHTML = ""
+          data.feedbackReceived.forEach((review) => {
+            const li = document.createElement("li")
+            li.textContent = review.feedback
+            feedbackList.appendChild(li)
+          })
+        } else {
+          feedbackWrapper.style.display = "none"
+        }
+      }
+    } catch (err) {
+      if (err.status === 404) {
+        // The submission no longer exists server-side (e.g. DB was reset) -
+        // stop treating this browser as having an active submission.
+        clearSavedSubmission()
+        stopPolling()
+        const matchSection = document.getElementById("match")
+        if (matchSection) matchSection.style.display = "none"
+      }
+      console.error("Failed to refresh match status:", err.message)
+    }
   }
 })
