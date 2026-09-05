@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CritiqueLoop - Anonymous Portfolio Feedback for Creators</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <header class="header">
+    <div class="container">
+      <div class="logo">
+        <i class="fa-solid fa-code"></i>
+        <span>CritiqueLoop</span>
+      </div>
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="#about">About</a></li>
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#submit">Submit</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <button class="mobile-menu-btn">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <a href="#submit" class="btn btn-primary desktop-cta">Submit Portfolio</a>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu">
+    <ul class="mobile-nav-list">
+      <li><a href="#about" class="mobile-nav-link">About</a></li>
+      <li><a href="#how-it-works" class="mobile-nav-link">How It Works</a></li>
+      <li><a href="#features" class="mobile-nav-link">Features</a></li>
+      <li><a href="#submit" class="mobile-nav-link">Submit</a></li>
+      <li><a href="#contact" class="mobile-nav-link">Contact</a></li>
+    </ul>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <h1>CritiqueLoop</h1>
+      <p class="tagline">Anonymous Portfolio Feedback for Creators</p>
+      <a href="#submit" class="btn btn-hero">Submit Your Portfolio</a>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="about section">
+    <div class="container">
+      <h2 class="section-title">About CritiqueLoop</h2>
+      <div class="about-content">
+        <p>CritiqueLoop helps developers and designers improve their portfolios through honest, anonymous peer feedback. Our platform connects creators with each other, allowing them to give and receive valuable insights without the pressure of revealing their identities.</p>
+        <p>Whether you're a seasoned professional or just starting out, getting fresh perspectives on your work is essential for growth. CritiqueLoop makes this process simple, fast, and anxiety-free.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="how-it-works section">
+    <div class="container">
+      <h2 class="section-title">How It Works</h2>
+      <div class="steps">
+        <div class="step-card">
+          <div class="step-icon">
+            <i class="fa-solid fa-paper-plane"></i>
+          </div>
+          <h3>1. Submit Your Portfolio</h3>
+          <p>Enter your portfolio URL in our simple submission form. No account creation or personal details required.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-icon">
+            <i class="fa-solid fa-shuffle"></i>
+          </div>
+          <h3>2. Get Randomly Matched</h3>
+          <p>Our system pairs you with another creator. You'll review their work while someone else reviews yours.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-icon">
+            <i class="fa-solid fa-comments"></i>
+          </div>
+          <h3>3. Review & Receive Feedback</h3>
+          <p>Provide constructive feedback on your match's portfolio and receive valuable insights on your own work.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features section">
+    <div class="container">
+      <h2 class="section-title">Features</h2>
+      <div class="feature-list">
+        <div class="feature">
+          <div class="feature-icon">
+            <i class="fa-solid fa-user-slash"></i>
+          </div>
+          <h3>No Login Required</h3>
+          <p>Skip the account creation process. Just submit your URL and get started immediately.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">
+            <i class="fa-solid fa-mask"></i>
+          </div>
+          <h3>Anonymous Submissions</h3>
+          <p>Your identity remains private, allowing for honest feedback without social pressure.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">
+            <i class="fa-solid fa-bolt"></i>
+          </div>
+          <h3>Simple & Fast Process</h3>
+          <p>Our streamlined system ensures you get valuable feedback quickly and efficiently.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Submit Portfolio Section -->
+  <section id="submit" class="submit section">
+    <div class="container">
+      <h2 class="section-title">Submit Your Portfolio</h2>
+      <div class="form-container">
+        <form id="portfolio-form" class="form">
+          <div class="form-group">
+            <label for="portfolio-url">Portfolio URL</label>
+            <input type="url" id="portfolio-url" name="portfolio-url" placeholder="https://your-portfolio.com" required>
+            <div class="error-message" id="url-error"></div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-submit">Submit for Review</button>
+          <div class="success-message" id="portfolio-success">Your portfolio has been submitted! You'll receive feedback soon.</div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="contact section">
+    <div class="container">
+      <h2 class="section-title">Contact Us</h2>
+      <div class="form-container">
+        <form id="contact-form" class="form">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="your-email@example.com" required>
+            <div class="error-message" id="email-error"></div>
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="How can we help you?" required></textarea>
+            <div class="error-message" id="message-error"></div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-submit">Send Message</button>
+          <div class="success-message" id="contact-success">Your message has been sent! We'll get back to you soon.</div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-logo">
+          <i class="fa-solid fa-code"></i>
+          <span>CritiqueLoop</span>
+        </div>
+        <div class="footer-copyright">
+          &copy; <span id="current-year"></span> CritiqueLoop. All rights reserved.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
